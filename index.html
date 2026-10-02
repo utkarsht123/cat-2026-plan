@@ -112,6 +112,20 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
 .rules h2 { font-size: 1.1rem; }
 .rules ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--fg); }
 .rules li { max-width: 80ch; }
+.backup p { margin: 0; max-width: 80ch; }
+.bk-status { font-family: var(--f-mono); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.bk-help { color: var(--muted); font-size: .9rem; }
+.bk-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.backup button { font: inherit; font-size: .88rem; font-weight: 500; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; }
+.backup button:hover { border-color: var(--muted); }
+.backup button:focus-visible, .backup textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+#bkMake { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.backup button.danger { background: var(--exam-bg); border-color: var(--exam); color: var(--exam); }
+.bk-label { font-family: var(--f-mono); font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.backup textarea { width: 100%; font-family: var(--f-mono); font-size: .8rem; padding: 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); resize: vertical; word-break: break-all; }
+.bk-confirm { display: grid; gap: 8px; padding: 12px; border-radius: 8px; background: var(--exam-bg); color: var(--fg); font-size: .9rem; }
+.bk-msg { font-size: .88rem; min-height: 1.3em; }
+.bk-msg.ok { color: var(--drill); } .bk-msg.err { color: var(--exam); }
 
 @media (max-width: 920px) {
   .main { grid-template-columns: minmax(0, 1fr); }
@@ -166,6 +180,26 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
       <li>If you're not buying AIMCAT, take a SimCAT in its place. Don't add extra mocks on top.</li>
       <li>Floor targets: DILR 22+, QA 22–25, VARC 42+. Check them every Monday.</li>
     </ul>
+  </section>
+
+  <section class="rules backup" id="backup">
+    <h2>Back up your progress</h2>
+    <p class="bk-status" id="bkCount">Ticked so far: 0 tasks.</p>
+    <p class="bk-help">Ticks are saved only in this browser. Make a backup code every few days and keep it somewhere safe, like a note or a WhatsApp message to yourself. Paste it here later, or on another device, to bring your ticks back.</p>
+    <div class="bk-actions">
+      <button type="button" id="bkMake">Create backup code</button>
+      <button type="button" id="bkRestore">Restore from code</button>
+    </div>
+    <label for="bkCode" class="bk-label">Backup code</label>
+    <textarea id="bkCode" rows="3" spellcheck="false" placeholder="Click Create backup code, or paste a code here and click Restore from code."></textarea>
+    <div class="bk-confirm" id="bkConfirm" hidden>
+      <span id="bkConfirmText"></span>
+      <div class="bk-actions">
+        <button type="button" id="bkYes" class="danger">Replace my ticks</button>
+        <button type="button" id="bkNo">Cancel</button>
+      </div>
+    </div>
+    <p class="bk-msg" id="bkMsg" role="status"></p>
   </section>
 </div>
 
@@ -381,12 +415,73 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
     detailEl.querySelectorAll("input[type=checkbox]").forEach(cb => cb.addEventListener("change", () => {
       store.set(`cat26:${day.k}:${cb.dataset.i}`, cb.checked ? "1" : "0");
       renderMonths();
+      updateCount();
     }));
     detailEl.querySelector("#prevDay").addEventListener("click", () => { selected = days[idx - 1].k; renderAll(); });
     detailEl.querySelector("#nextDay").addEventListener("click", () => { selected = days[idx + 1].k; renderAll(); });
   }
 
   function renderAll() { renderMonths(); renderDetail(); }
+  // Backup and restore
+  const bk = id => document.getElementById(id);
+  const PREFIX = "CAT26-";
+  const tickedList = () => {
+    const out = [];
+    days.forEach(day => day.tasks.forEach((_, i) => { if (isDone(day.k, i)) out.push(day.k.slice(5) + ":" + i); }));
+    return out;
+  };
+  function updateCount() {
+    const done = tickedList().length;
+    const total = days.reduce((n, day) => n + day.tasks.length, 0);
+    bk("bkCount").textContent = `Ticked so far: ${done} of ${total} tasks.`;
+  }
+  function say(text, kind) { const m = bk("bkMsg"); m.textContent = text; m.className = "bk-msg " + (kind || ""); }
+  function decode(code) {
+    code = code.trim().replace(/\s+/g, "");
+    if (!code.startsWith(PREFIX)) return null;
+    try {
+      const list = JSON.parse(atob(code.slice(PREFIX.length)));
+      if (!Array.isArray(list)) return null;
+      return list.filter(x => typeof x === "string" && /^\d{2}-\d{2}:\d+$/.test(x));
+    } catch (e) { return null; }
+  }
+
+  bk("bkMake").addEventListener("click", () => {
+    const list = tickedList();
+    const code = PREFIX + btoa(JSON.stringify(list));
+    const box = bk("bkCode");
+    box.value = code;
+    bk("bkConfirm").hidden = true;
+    const done = () => say(`Backup code for ${list.length} ticked tasks copied. Paste it somewhere safe.`, "ok");
+    const fallback = () => { box.focus(); box.select(); say(`Backup code for ${list.length} ticked tasks is in the box. Copy it and keep it somewhere safe.`, "ok"); };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, fallback);
+      else fallback();
+    } catch (e) { fallback(); }
+  });
+
+  let pending = null;
+  bk("bkRestore").addEventListener("click", () => {
+    const list = decode(bk("bkCode").value);
+    if (!list) { say("That code doesn't look right. Paste the whole code, starting with CAT26-.", "err"); return; }
+    pending = list;
+    bk("bkConfirmText").textContent = `This code has ${list.length} ticked tasks. Restoring replaces the ${tickedList().length} ticks in this browser.`;
+    bk("bkConfirm").hidden = false;
+    say("");
+  });
+  bk("bkNo").addEventListener("click", () => { pending = null; bk("bkConfirm").hidden = true; });
+  bk("bkYes").addEventListener("click", () => {
+    if (!pending) return;
+    days.forEach(day => day.tasks.forEach((_, i) => store.set(`cat26:${day.k}:${i}`, "0")));
+    pending.forEach(x => { const [md, i] = x.split(":"); store.set(`cat26:2026-${md}:${i}`, "1"); });
+    bk("bkConfirm").hidden = true;
+    say(`Restored ${pending.length} ticked tasks.`, "ok");
+    pending = null;
+    renderAll();
+  });
+
+  const baseRender = renderAll;
+  renderAll = function () { baseRender(); updateCount(); };
   renderAll();
 })();
 </script>
