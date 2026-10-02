@@ -174,6 +174,14 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
 .sc-table .acts { white-space: nowrap; text-align: right; }
 .sc-table .acts button { padding: 4px 9px; font-size: .78rem; margin-left: 4px; }
 .sc-table .acts button.danger { background: var(--exam-bg); border-color: var(--exam); color: var(--exam); }
+.import-box { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 16px; }
+.import-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; }
+.import-text { display: grid; gap: 4px; min-width: 0; flex: 1 1 320px; }
+.import-text h3 { font-size: 1rem; }
+.file-btn { position: relative; display: inline-block; font-size: .88rem; font-weight: 500; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: var(--surface); cursor: pointer; white-space: nowrap; }
+.file-btn:hover { filter: brightness(1.08); }
+.file-btn:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; }
 .log-btn { font: inherit; font-size: .88rem; font-weight: 500; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--mock); background: var(--mock-bg); color: var(--mock); cursor: pointer; }
 @media (max-width: 640px) {
   .floors { grid-template-columns: minmax(0, 1fr); }
@@ -236,6 +244,17 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
         <svg id="scChart" role="img" aria-label="Overall mock scores over time"></svg>
         <div class="tip" id="scTip" hidden></div>
       </div>
+    </div>
+
+    <div class="import-box">
+      <div class="import-row">
+        <div class="import-text">
+          <h3>Import from Excel</h3>
+          <p class="bk-help">Upload your mock tracker (.xlsx or .csv). It reads the rows under the Mock, Date, VARC, DILR and Quant columns, plus their %ile columns. Mocks already logged with the same date and name get updated, so you can upload the sheet again whenever new percentiles come out.</p>
+        </div>
+        <label class="file-btn" for="xlFile">Choose Excel file<input type="file" id="xlFile" accept=".xlsx,.xls,.csv"></label>
+      </div>
+      <p class="bk-msg" id="xlMsg" role="status"></p>
     </div>
 
     <form id="scForm" class="sc-form" novalidate>
@@ -765,6 +784,116 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
     fsay(`${was ? "Updated" : "Saved"} ${rec.name}: ${total(rec)} marks.`, "ok");
   });
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderChart, 150); });
+
+  // Excel import
+  let xlsxReady = null;
+  function loadXLSX() {
+    if (window.XLSX) return Promise.resolve(window.XLSX);
+    if (!xlsxReady) xlsxReady = new Promise((res, rej) => {
+      const sc = document.createElement("script");
+      sc.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+      sc.onload = () => res(window.XLSX);
+      sc.onerror = () => { xlsxReady = null; rej(new Error("load")); };
+      document.head.appendChild(sc);
+    });
+    return xlsxReady;
+  }
+  const xsay = (text, kind) => { const el = $("xlMsg"); el.textContent = text; el.className = "bk-msg " + (kind || ""); };
+  const MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+  const isoOf = (y, m, d) => (m >= 1 && m <= 12 && d >= 1 && d <= 31) ? `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}` : null;
+  function toISO(v, XLSX) {
+    if (typeof v === "number") { const p = XLSX.SSF.parse_date_code(v); return p ? isoOf(p.y, p.m, p.d) : null; }
+    if (typeof v !== "string") return null;
+    const s = v.trim(); let m;
+    if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return isoOf(+m[1], +m[2], +m[3]);
+    if ((m = s.match(/^(\d{1,2})[-\s/]([A-Za-z]{3})[A-Za-z]*[-\s/,]+(\d{2,4})$/))) {
+      const y = m[3].length === 2 ? 2000 + +m[3] : +m[3];
+      return isoOf(y, MONTHS[m[2].toLowerCase()], +m[1]);
+    }
+    if ((m = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})$/))) {
+      const y = m[3].length === 2 ? 2000 + +m[3] : +m[3];
+      return isoOf(y, +m[2], +m[1]);
+    }
+    return null;
+  }
+  function num(v) {
+    if (typeof v === "number") return Number.isFinite(v) ? v : null;
+    if (typeof v !== "string" || !v.trim()) return null;
+    const n = parseFloat(v.replace(/[%,\s]/g, ""));
+    return Number.isFinite(n) ? n : null;
+  }
+  function headerMap(row) {
+    const c = {}; let last = null;
+    row.forEach((cell, j) => {
+      const h = String(cell == null ? "" : cell).toLowerCase().trim();
+      if (!h) return;
+      if (/%ile|percentile|^%$/.test(h)) { if (last && c[last + "p"] === undefined) c[last + "p"] = j; return; }
+      if (/date/.test(h)) { c.date = j; return; }
+      if (/varc/.test(h)) { c.v = j; last = "v"; return; }
+      if (/dilr|lrdi/.test(h)) { c.d = j; last = "d"; return; }
+      if (/quant|^qa\b|\bqa\b/.test(h)) { c.q = j; last = "q"; return; }
+      if (/ovr|overall|total/.test(h)) { last = "o"; return; }
+      if (/mock|test|name/.test(h) && c.name === undefined) { c.name = j; return; }
+    });
+    return c;
+  }
+  function parseWorkbook(wb, XLSX) {
+    const names = wb.SheetNames.slice().sort((a, b) => (/full|mock/i.test(b) ? 1 : 0) - (/full|mock/i.test(a) ? 1 : 0));
+    for (const sn of names) {
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, raw: true, defval: null });
+      for (let i = 0; i < Math.min(rows.length, 30); i++) {
+        const c = headerMap(rows[i] || []);
+        if ([c.name, c.date, c.v, c.d, c.q].some(x => x === undefined)) continue;
+        const recs = []; let skipped = 0;
+        for (let r = i + 1; r < rows.length; r++) {
+          const row = rows[r] || [];
+          const name = row[c.name] == null ? "" : String(row[c.name]).trim();
+          const v = num(row[c.v]), d = num(row[c.d]), q = num(row[c.q]);
+          if (!name && v === null && d === null && q === null) continue;
+          const date = toISO(row[c.date], XLSX);
+          if (!name || !date || [v, d, q].some(x => x === null)) {
+            if (name && (date || v !== null || d !== null || q !== null)) skipped++;
+            continue;
+          }
+          const p = k => c[k] === undefined ? null : num(row[c[k]]);
+          const rec = cleanMock({ id: "x" + Date.now().toString(36) + r, date, name, v: Math.round(v), d: Math.round(d), q: Math.round(q),
+            vp: p("vp"), dp: p("dp"), qp: p("qp"), op: p("op"), note: "" });
+          if (rec) recs.push(rec); else skipped++;
+        }
+        return { sheet: sn, recs, skipped };
+      }
+    }
+    return null;
+  }
+  $("xlFile").addEventListener("change", async e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    xsay(`Reading ${file.name}…`);
+    try {
+      const XLSX = await loadXLSX().catch(() => { throw new Error("lib"); });
+      const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+      const res = parseWorkbook(wb, XLSX);
+      if (!res || !res.recs.length) {
+        xsay("No mocks found. The sheet needs a header row with Mock, Date, VARC, DILR and Quant columns, with one mock per row below it.", "err");
+        return;
+      }
+      let added = 0, updated = 0;
+      res.recs.forEach(rec => {
+        const i = mocks.findIndex(m => m.date === rec.date && m.name.toLowerCase() === rec.name.toLowerCase());
+        if (i >= 0) { mocks[i] = { ...rec, id: mocks[i].id, note: mocks[i].note || "" }; updated++; }
+        else { mocks.push(rec); added++; }
+      });
+      saveMocks(); renderScores();
+      xsay(`Imported from the "${res.sheet}" sheet: ${plural(added, "mock")} added, ${updated} updated.` +
+        (res.skipped ? ` Skipped ${plural(res.skipped, "row")} with a missing date or section mark.` : ""), "ok");
+    } catch (err) {
+      xsay(err.message === "lib"
+        ? "Couldn't load the Excel reader. Check your internet connection and try again."
+        : "Couldn't read that file. Upload an .xlsx or .csv file.", "err");
+    } finally {
+      e.target.value = "";
+    }
+  });
 
   // Backup and restore (ticks + mock scores)
   const bk = $;
