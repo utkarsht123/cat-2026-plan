@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Day-by-day CAT 2026 preparation calendar: mocks, analysis, DILR and QA practice, with a tickable checklist.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232448c9'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='14' fill='white' text-anchor='middle'%3ECAT%3C/text%3E%3C/svg%3E">
+<title>CAT 2026 Countdown Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: countdown header → phase strip → two month grids (Oct, Nov) beside a sticky day-detail panel; stacks on phones */
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --fg: #16202e;
+  --muted: #5b6676;
+  --line: #dde2ea;
+  --accent: #2448c9;
+  --mock: #6a3fd1;     --mock-bg: #efe9fc;
+  --anal: #b06a00;     --anal-bg: #fdf1dd;
+  --drill: #0b7a6c;    --drill-bg: #dff4f0;
+  --rev: #3c5a85;      --rev-bg: #e4ebf5;
+  --rest: #5f6b5a;     --rest-bg: #e9ede6;
+  --exam: #c4263b;     --exam-bg: #fbe3e6;
+  --f-display: "Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10141b; --surface: #181e28; --fg: #e6eaf1; --muted: #98a2b3; --line: #2a3240; --accent: #7d9bff;
+    --mock: #b79cff; --mock-bg: #2a2147; --anal: #f0b357; --anal-bg: #3a2a12;
+    --drill: #4fd1bd; --drill-bg: #123430; --rev: #9ab6e0; --rev-bg: #1f2b3d;
+    --rest: #b4c0ad; --rest-bg: #252b23; --exam: #ff7b8c; --exam-bg: #431c23;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10141b; --surface: #181e28; --fg: #e6eaf1; --muted: #98a2b3; --line: #2a3240; --accent: #7d9bff;
+  --mock: #b79cff; --mock-bg: #2a2147; --anal: #f0b357; --anal-bg: #3a2a12;
+  --drill: #4fd1bd; --drill-bg: #123430; --rev: #9ab6e0; --rev-bg: #1f2b3d;
+  --rest: #b4c0ad; --rest-bg: #252b23; --exam: #ff7b8c; --exam-bg: #431c23;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 15px; line-height: 1.5; padding-inline: 16px; padding-block: 28px 48px; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 24px; }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; text-wrap: balance; }
+
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+header.top h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 700; letter-spacing: -0.01em; }
+header.top p { margin: 4px 0 0; color: var(--muted); max-width: 60ch; }
+.count { display: flex; align-items: baseline; gap: 10px; }
+.count b { font-family: var(--f-mono); font-weight: 500; font-size: clamp(2.6rem, 7vw, 3.6rem); line-height: 1; color: var(--exam); font-variant-numeric: tabular-nums; }
+.count span { color: var(--muted); font-size: .9rem; line-height: 1.25; }
+
+.phases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.phase { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 4px; min-width: 0; }
+.phase .when { font-family: var(--f-mono); font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.phase h3 { font-size: 1.05rem; }
+.phase p { margin: 0; color: var(--muted); font-size: .88rem; }
+.phase.now { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .82rem; color: var(--muted); align-items: center; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend .tally { margin-left: auto; font-family: var(--f-mono); font-size: .78rem; }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
+.months { display: grid; gap: 28px; min-width: 0; }
+.month h2 { font-size: 1.2rem; margin-bottom: 10px; }
+.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.dow { font-family: var(--f-mono); font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding: 0 4px 4px; }
+.cell { min-height: 84px; border-radius: 8px; padding: 6px 7px; background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; text-align: left; font: inherit; color: inherit; cursor: pointer; min-width: 0; position: relative; }
+.cell:hover { border-color: var(--muted); }
+.cell:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cell.off { background: transparent; border-style: dashed; cursor: default; opacity: .45; }
+.cell .d { font-family: var(--f-mono); font-size: .78rem; font-variant-numeric: tabular-nums; display: flex; justify-content: space-between; }
+.cell .tag { font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.cell .t { font-size: .76rem; line-height: 1.25; color: var(--fg); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.cell.today { box-shadow: 0 0 0 2px var(--accent); }
+.cell.sel { outline: 2px solid var(--fg); outline-offset: 1px; }
+.cell .tick { color: var(--drill); font-weight: 700; }
+.cell.mock { background: var(--mock-bg); border-color: transparent; } .cell.mock .tag { color: var(--mock); }
+.cell.anal { background: var(--anal-bg); border-color: transparent; } .cell.anal .tag { color: var(--anal); }
+.cell.drill .tag { color: var(--drill); }
+.cell.rev { background: var(--rev-bg); border-color: transparent; } .cell.rev .tag { color: var(--rev); }
+.cell.rest { background: var(--rest-bg); border-color: transparent; } .cell.rest .tag { color: var(--rest); }
+.cell.exam { background: var(--exam); border-color: transparent; } .cell.exam .tag, .cell.exam .t, .cell.exam .d { color: #fff; }
+
+aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.detail .eyebrow { font-family: var(--f-mono); font-size: .74rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.detail h2 { font-size: 1.35rem; }
+.pill { display: inline-block; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 3px 9px; border-radius: 99px; }
+.pill.mock { background: var(--mock-bg); color: var(--mock); } .pill.anal { background: var(--anal-bg); color: var(--anal); }
+.pill.drill { background: var(--drill-bg); color: var(--drill); } .pill.rev { background: var(--rev-bg); color: var(--rev); }
+.pill.rest { background: var(--rest-bg); color: var(--rest); } .pill.exam { background: var(--exam-bg); color: var(--exam); }
+.tasks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.tasks label { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; cursor: pointer; }
+.tasks input { width: 17px; height: 17px; margin: 2px 0 0; accent-color: var(--accent); }
+.tasks .sec { font-family: var(--f-mono); font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; display: block; }
+.tasks input:checked + span { color: var(--muted); text-decoration: line-through; }
+.detail .note { font-size: .82rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin: 0; }
+.navbtns { display: flex; gap: 8px; }
+.navbtns button { flex: 1; font: inherit; font-size: .85rem; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; }
+.navbtns button:hover { border-color: var(--muted); }
+.navbtns button:disabled { opacity: .4; cursor: default; }
+
+.rules { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 10px; }
+.rules h2 { font-size: 1.1rem; }
+.rules ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--fg); }
+.rules li { max-width: 80ch; }
+
+@media (max-width: 920px) {
+  .main { grid-template-columns: minmax(0, 1fr); }
+  aside.detail { position: static; }
+}
+@media (max-width: 640px) {
+  .phases { grid-template-columns: minmax(0, 1fr); }
+  .cell { min-height: 54px; padding: 4px; }
+  .cell .t { display: none; }
+  .cell .tag { font-size: .56rem; letter-spacing: .02em; }
+  .legend .tally { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cell { transition: border-color .15s; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>CAT 2026 Countdown Plan</h1>
+      <p>Oct 3 to Nov 29. About 19 full mocks, daily DILR set practice, and one QA topic block a week. Click a day to see its tasks and tick them off.</p>
+    </div>
+    <div class="count"><b id="daysLeft">57</b><span>days to<br>CAT · Sun 29 Nov</span></div>
+  </header>
+
+  <section class="phases" id="phases"></section>
+
+  <div class="legend">
+    <span><i style="background:var(--mock)"></i>Full mock</span>
+    <span><i style="background:var(--anal)"></i>Mock analysis</span>
+    <span><i style="background:var(--drill)"></i>Practice</span>
+    <span><i style="background:var(--rev)"></i>Revision</span>
+    <span><i style="background:var(--rest)"></i>Rest</span>
+    <span><i style="background:var(--exam)"></i>CAT</span>
+    <span class="tally" id="tally"></span>
+  </div>
+
+  <div class="main">
+    <div class="months" id="months"></div>
+    <aside class="detail" id="detail" aria-live="polite"></aside>
+  </div>
+
+  <section class="rules">
+    <h2>Rules for every day</h2>
+    <ul>
+      <li>Analyse every mock for at least as long as you took to write it. Log each mistake as concept, silly, or time.</li>
+      <li>Keep the CAT 2023, 2024 and 2025 papers untouched. They're your most realistic full mocks. Use CAT 2017–2022 for daily DILR practice.</li>
+      <li>For DILR, always take 5 minutes to scan and rank the sets first. Write one line on why you picked or skipped each set.</li>
+      <li>The QA topic each week is a starting guess. Swap it for whatever your mock analysis shows is weakest.</li>
+      <li>If you're not buying AIMCAT, take a SimCAT in its place. Don't add extra mocks on top.</li>
+      <li>Floor targets: DILR 22+, QA 22–25, VARC 42+. Check them every Monday.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  const EXAM = new Date(2026, 10, 29);
+  const START = new Date(2026, 9, 3);
+  const key = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const fmt = d => d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+
+  const MOCKS = {
+    "2026-10-04": "SimCAT", "2026-10-07": "AIMCAT", "2026-10-11": "SimCAT", "2026-10-14": "AIMCAT",
+    "2026-10-18": "SimCAT", "2026-10-21": "AIMCAT", "2026-10-25": "SimCAT", "2026-10-28": "CAT 2023 paper",
+    "2026-11-01": "SimCAT", "2026-11-03": "AIMCAT", "2026-11-05": "SimCAT", "2026-11-08": "CAT 2024 paper",
+    "2026-11-10": "AIMCAT", "2026-11-12": "SimCAT", "2026-11-15": "AIMCAT", "2026-11-17": "SimCAT",
+    "2026-11-19": "AIMCAT", "2026-11-22": "CAT 2025 paper", "2026-11-24": "SimCAT (optional)"
+  };
+
+  const PHASES = [
+    { n: 1, from: new Date(2026, 9, 3), to: new Date(2026, 9, 31), name: "Fix the weak spots", text: "2 mocks a week (Wed, Sun). Daily DILR sets from CAT 2017–2022 and one QA topic block a week." },
+    { n: 2, from: new Date(2026, 10, 1), to: new Date(2026, 10, 22), name: "Build consistency", text: "3 mocks a week (Sun, Tue, Thu), including CAT 2024 and 2025. Harder DILR sets and mixed QA." },
+    { n: 3, from: new Date(2026, 10, 23), to: new Date(2026, 10, 29), name: "Taper", text: "One optional mock, then revision only. No new topics. Sleep on your exam slot timing." }
+  ];
+  const phaseOf = d => PHASES.find(p => d >= p.from && d <= p.to);
+
+  function qaTopic(d) {
+    if (d <= new Date(2026, 9, 11)) return "Arithmetic: percentages, profit and loss, ratio, SI/CI, TSD, time and work, mixtures";
+    if (d <= new Date(2026, 9, 18)) return "Algebra: equations, quadratics, inequalities, functions, logs, progressions";
+    if (d <= new Date(2026, 9, 25)) return "Geometry and mensuration: triangles, circles, polygons, coordinate geometry";
+    return "Numbers and modern maths: number system, P&C, probability, set theory";
+  }
+  function dilrSource(d) {
+    if (d <= new Date(2026, 9, 18)) return "CAT 2017–2019 papers";
+    if (d <= new Date(2026, 9, 31)) return "CAT 2020–2022 papers";
+    return "IMS advanced sets, Elites Grid, or re-solves of old AIMCAT sets";
+  }
+
+  const T = (sec, text) => ({ sec, text });
+
+  function plan(d) {
+    const k = key(d);
+    const dow = d.getDay();
+    const ph = phaseOf(d);
+    const prev = MOCKS[key(addDays(d, -1))];
+
+    if (k === "2026-11-29") return { type: "exam", tag: "CAT", title: "CAT 2026", tasks: [
+      T("Before", "Light breakfast, reach the centre early with admit card and photo ID"),
+      T("VARC", "40 min. Start with the RC you find easiest, not the first one"),
+      T("DILR", "Scan every set in the first 4–5 minutes, exactly like practice"),
+      T("QA", "First pass on sure-shot questions, second pass on the rest"),
+      T("Mindset", "Don't judge the paper while you're writing it. Everyone finds it hard")
+    ]};
+    if (k === "2026-11-28") return { type: "rest", tag: "Rest", title: "Rest and logistics", tasks: [
+      T("Admin", "Print admit card, keep photo ID ready"),
+      T("Admin", "Check the route and travel time to your centre"),
+      T("Light", "Flip through your formula sheet once, nothing more"),
+      T("Rule", "No mocks and no new questions. Sleep early")
+    ]};
+    if (k === "2026-11-27") return { type: "rev", tag: "Revise", title: "Light revision", tasks: [
+      T("QA", "Formula sheet, one last pass"),
+      T("Mixed", "2 easy DILR sets, 2 RCs, 10 easy QA questions, for confidence"),
+      T("Sleep", "Shift sleep and wake times to suit your exam slot")
+    ]};
+    if (k === "2026-11-26") return { type: "rev", tag: "Revise", title: "Error log revision", tasks: [
+      T("Log", "Go through every 'silly' mistake in your error log"),
+      T("DILR", "Re-solve 4 of your best-analysed DILR sets from October"),
+      T("VARC", "2 RCs, untimed, focusing on option elimination"),
+      T("Sleep", "In bed by 11")
+    ]};
+    if (k === "2026-11-25") return { type: "rev", tag: "Revise", title: "Light analysis and revision", tasks: [
+      T("Analysis", "1 hour on yesterday's mock: only the mistakes, no deep re-solving"),
+      T("QA", "Revise your formula sheet"),
+      T("DILR", "2 easy sets to keep the rhythm"),
+      T("VARC", "2 RCs")
+    ]};
+    if (k === "2026-10-03") return { type: "drill", tag: "Setup", title: "Set up for the plan", tasks: [
+      T("Setup", "Start an error log: question, section, mistake type (concept / silly / time), fix"),
+      T("Setup", "Set aside the CAT 2023, 2024 and 2025 papers untouched for full mocks"),
+      T("Setup", "Decide on AIMCAT and buy it if you're taking it"),
+      T("DILR", "4 sets from CAT 2017 slot 1: 5-min scan, solve best 2–3 in 35 min, re-solve the rest"),
+      T("QA", "List your 3–4 weakest topics from the six mocks so far")
+    ]};
+    if (MOCKS[k]) {
+      const name = MOCKS[k];
+      const t = [
+        T("Mock", `Full mock: ${name}. 2 hours in one sitting, at your CAT slot time`),
+        T("Track", "Enter section scores, attempts and accuracy in your tracker"),
+        T("Quick", "20 min: mark every question you guessed so analysis catches them")
+      ];
+      if (name.includes("optional")) t.push(T("Note", "Skip this if you feel tired or anxious. Revise the error log instead"));
+      if (name.startsWith("CAT")) t.push(T("Note", "Real paper: compare your score with that year's actual percentile cutoffs"));
+      return { type: "mock", tag: "Mock", title: name, tasks: t };
+    }
+    if (prev) {
+      const t = [
+        T("DILR", "Re-solve every set you skipped or left half-done, untimed. Was it a selection mistake or a skill gap?"),
+        T("QA", "Redo every wrong and skipped question. Log each one as concept, silly, or time"),
+        T("VARC", "Read solutions for every wrong answer and note the trap you fell for"),
+        T("DILR", `2 new sets, timed (${dilrSource(d)})`)
+      ];
+      if (dow === 1) t.push(T("Weekly", "Weekly review: update your averages and check the DILR and QA floors against last week"));
+      return { type: "anal", tag: "Analysis", title: `Analyse the ${prev.replace(" (optional)", "")}`, tasks: t };
+    }
+    if (ph && ph.n === 2) return { type: "drill", tag: "Practice", title: "Mini-sectionals", tasks: [
+      T("DILR", `4 tougher sets in 40 min as a mini-sectional (${dilrSource(d)})`),
+      T("QA", "Mixed set of 22 questions in 40 min, then revise your error log"),
+      T("VARC", "2 RCs, timed, plus 4 VA questions"),
+      T("Review", "Reread your DILR selection notes from October")
+    ]};
+    return { type: "drill", tag: "Practice", title: qaTopic(d).split(":")[0] + " + DILR", tasks: [
+      T("DILR", `4 sets from ${dilrSource(d)}: 5-min scan and rank, solve the best 2–3 in 35 min, re-solve the rest untimed`),
+      T("QA", `${qaTopic(d)}. 25–30 CAT past-paper questions, then 10 timed`),
+      T("VARC", "2 RCs and 4 VA questions (para summary, odd one out)"),
+      T("Log", "One line per DILR set on why you picked or skipped it")
+    ]};
+  }
+
+  // Build day list
+  const days = [];
+  for (let d = START; d <= EXAM; d = addDays(d, 1)) days.push({ date: d, k: key(d), ...plan(d) });
+  const byKey = Object.fromEntries(days.map(x => [x.k, x]));
+
+  // Storage (per-browser, optional)
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+  const isDone = (k, i) => store.get(`cat26:${k}:${i}`) === "1";
+  const allDone = day => day.tasks.every((_, i) => isDone(day.k, i));
+
+  // Today / countdown
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const left = Math.round((EXAM - today) / 86400000);
+  document.getElementById("daysLeft").textContent = left >= 0 ? left : 0;
+
+  // Phases
+  const phaseEl = document.getElementById("phases");
+  const short = d => d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  PHASES.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "phase" + (today >= p.from && today <= p.to ? " now" : "");
+    div.innerHTML = `<span class="when">Phase ${p.n} · ${short(p.from)} – ${short(p.to)}</span><h3>${p.name}</h3><p>${p.text}</p>`;
+    phaseEl.appendChild(div);
+  });
+
+  // Tally
+  const names = Object.values(MOCKS);
+  const sim = names.filter(n => n.startsWith("SimCAT")).length;
+  const aim = names.filter(n => n.startsWith("AIMCAT")).length;
+  const pyq = names.filter(n => n.startsWith("CAT")).length;
+  document.getElementById("tally").textContent = `${names.length} mocks: ${sim} SimCAT · ${aim} AIMCAT · ${pyq} past CAT papers`;
+
+  // Calendars
+  const monthsEl = document.getElementById("months");
+  let selected = byKey[key(today)] ? key(today) : days[0].k;
+
+  function renderMonths() {
+    monthsEl.innerHTML = "";
+    [[2026, 9], [2026, 10]].forEach(([y, m]) => {
+      const sec = document.createElement("section");
+      sec.className = "month";
+      const first = new Date(y, m, 1);
+      sec.innerHTML = `<h2>${first.toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</h2>`;
+      const grid = document.createElement("div");
+      grid.className = "grid";
+      ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].forEach(n => {
+        const h = document.createElement("div"); h.className = "dow"; h.textContent = n; grid.appendChild(h);
+      });
+      const lead = (first.getDay() + 6) % 7;
+      for (let i = 0; i < lead; i++) grid.appendChild(document.createElement("div"));
+      const dim = new Date(y, m + 1, 0).getDate();
+      for (let n = 1; n <= dim; n++) {
+        const d = new Date(y, m, n);
+        const day = byKey[key(d)];
+        const btn = document.createElement("button");
+        btn.type = "button";
+        if (!day) {
+          btn.className = "cell off"; btn.disabled = true;
+          btn.innerHTML = `<span class="d">${n}</span>`;
+        } else {
+          btn.className = `cell ${day.type}` + (day.k === key(today) ? " today" : "") + (day.k === selected ? " sel" : "");
+          btn.innerHTML = `<span class="d"><span>${n}</span>${allDone(day) ? '<span class="tick" aria-label="done">✓</span>' : ""}</span><span class="tag">${day.tag}</span><span class="t">${day.type === "mock" ? day.title : day.type === "anal" ? "" : day.title}</span>`;
+          btn.setAttribute("aria-label", `${fmt(d)}: ${day.tag}, ${day.title}`);
+          btn.addEventListener("click", () => { selected = day.k; renderAll(); });
+        }
+        grid.appendChild(btn);
+      }
+      sec.appendChild(grid);
+      monthsEl.appendChild(sec);
+    });
+  }
+
+  const detailEl = document.getElementById("detail");
+  function renderDetail() {
+    const day = byKey[selected];
+    const idx = days.indexOf(day);
+    const ph = phaseOf(day.date);
+    const until = Math.round((EXAM - day.date) / 86400000);
+    detailEl.innerHTML = `
+      <div><span class="eyebrow">Phase ${ph.n} · ${until === 0 ? "exam day" : until + " days to CAT"}</span>
+      <h2>${fmt(day.date)}</h2></div>
+      <div><span class="pill ${day.type}">${day.tag}</span> <strong style="margin-left:6px">${day.title}</strong></div>
+      <ul class="tasks">${day.tasks.map((t, i) => `
+        <li><label><input type="checkbox" id="t-${day.k}-${i}" data-i="${i}" ${isDone(day.k, i) ? "checked" : ""}>
+        <span><span class="sec">${t.sec}</span>${t.text}</span></label></li>`).join("")}</ul>
+      <div class="navbtns">
+        <button type="button" id="prevDay" ${idx === 0 ? "disabled" : ""}>← Previous day</button>
+        <button type="button" id="nextDay" ${idx === days.length - 1 ? "disabled" : ""}>Next day →</button>
+      </div>
+      <p class="note">Ticks are saved in this browser only.</p>`;
+    detailEl.querySelectorAll("input[type=checkbox]").forEach(cb => cb.addEventListener("change", () => {
+      store.set(`cat26:${day.k}:${cb.dataset.i}`, cb.checked ? "1" : "0");
+      renderMonths();
+    }));
+    detailEl.querySelector("#prevDay").addEventListener("click", () => { selected = days[idx - 1].k; renderAll(); });
+    detailEl.querySelector("#nextDay").addEventListener("click", () => { selected = days[idx + 1].k; renderAll(); });
+  }
+
+  function renderAll() { renderMonths(); renderDetail(); }
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
