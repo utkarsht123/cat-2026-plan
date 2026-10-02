@@ -127,6 +127,60 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
 .bk-msg { font-size: .88rem; min-height: 1.3em; }
 .bk-msg.ok { color: var(--drill); } .bk-msg.err { color: var(--exam); }
 
+/* Mock scores */
+.scores { gap: 18px; }
+.sc-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.sc-summary { margin: 0; font-family: var(--f-mono); font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.floors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.floor { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; min-width: 0; background: var(--bg); }
+.floor .fl-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.floor .fl-name { font-family: var(--f-display); font-weight: 700; font-size: 1rem; }
+.floor .fl-nums { font-family: var(--f-mono); font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.floor svg { width: 100%; height: 44px; display: block; }
+.status { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.status.good { background: var(--drill-bg); color: var(--drill); }
+.status.bad { background: var(--exam-bg); color: var(--exam); }
+.status.none { background: var(--rev-bg); color: var(--rev); }
+.chart-card { display: grid; gap: 8px; min-width: 0; }
+.chart-title { font-weight: 600; font-size: .9rem; }
+.chart-title span { font-weight: 400; color: var(--muted); font-size: .82rem; }
+.chart-wrap { position: relative; width: 100%; }
+#scChart { width: 100%; height: 240px; display: block; overflow: visible; }
+.chart-empty { color: var(--muted); font-size: .9rem; padding: 32px 0; text-align: center; border: 1px dashed var(--line); border-radius: 10px; }
+.tip { position: absolute; pointer-events: none; background: var(--fg); color: var(--bg); border-radius: 8px; padding: 8px 10px; font-size: .78rem; line-height: 1.35; font-variant-numeric: tabular-nums; white-space: nowrap; transform: translate(-50%, -100%); margin-top: -12px; z-index: 2; }
+.tip b { font-weight: 600; }
+.sc-form { display: grid; gap: 12px; border-top: 1px solid var(--line); padding-top: 16px; }
+.sc-form h3 { font-size: 1rem; }
+.f-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 12px; }
+.f { display: grid; gap: 4px; min-width: 0; }
+.f span { font-family: var(--f-mono); font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.f.wide { grid-column: span 2; }
+.f.full { grid-column: 1 / -1; }
+.f input { width: 100%; font: inherit; font-size: .92rem; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); font-variant-numeric: tabular-nums; }
+.f input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.f input[aria-invalid="true"] { border-color: var(--exam); }
+.f.total b { font-family: var(--f-mono); font-weight: 500; font-size: 1.4rem; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.scores button { font: inherit; font-size: .88rem; font-weight: 500; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; }
+.scores button:hover { border-color: var(--muted); }
+.scores button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.scores button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.table-wrap { overflow-x: auto; }
+.sc-table { width: 100%; border-collapse: collapse; font-size: .86rem; font-variant-numeric: tabular-nums; min-width: 620px; }
+.sc-table th { text-align: left; font-family: var(--f-mono); font-size: .7rem; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.sc-table td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.sc-table td.num, .sc-table th.num { text-align: right; }
+.sc-table small { display: block; color: var(--muted); font-size: .74rem; }
+.sc-table .note { color: var(--muted); font-size: .78rem; max-width: 32ch; }
+.sc-table .acts { white-space: nowrap; text-align: right; }
+.sc-table .acts button { padding: 4px 9px; font-size: .78rem; margin-left: 4px; }
+.sc-table .acts button.danger { background: var(--exam-bg); border-color: var(--exam); color: var(--exam); }
+.log-btn { font: inherit; font-size: .88rem; font-weight: 500; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--mock); background: var(--mock-bg); color: var(--mock); cursor: pointer; }
+@media (max-width: 640px) {
+  .floors { grid-template-columns: minmax(0, 1fr); }
+  .f-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #scChart { height: 200px; }
+}
+
 @media (max-width: 920px) {
   .main { grid-template-columns: minmax(0, 1fr); }
   aside.detail { position: static; }
@@ -170,6 +224,48 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
     <aside class="detail" id="detail" aria-live="polite"></aside>
   </div>
 
+  <section class="rules scores" id="scores">
+    <div class="sc-head">
+      <h2>Mock scores</h2>
+      <p class="sc-summary" id="scSummary"></p>
+    </div>
+    <div class="floors" id="scFloors"></div>
+    <div class="chart-card">
+      <div class="chart-title">Overall score by mock <span>· dashed line: 105, roughly the 99.5 %ile zone in SimCATs</span></div>
+      <div class="chart-wrap" id="scChartWrap">
+        <svg id="scChart" role="img" aria-label="Overall mock scores over time"></svg>
+        <div class="tip" id="scTip" hidden></div>
+      </div>
+    </div>
+
+    <form id="scForm" class="sc-form" novalidate>
+      <h3 id="scFormTitle">Log a mock</h3>
+      <div class="f-grid">
+        <label class="f wide"><span>Date</span><input type="date" id="fDate" required></label>
+        <label class="f wide"><span>Mock</span><input type="text" id="fName" list="mockNames" placeholder="e.g. SimCAT 5" required></label>
+        <label class="f"><span>VARC marks</span><input type="number" id="fV" inputmode="numeric" step="1" min="-24" max="72" required></label>
+        <label class="f"><span>VARC %ile</span><input type="number" id="fVp" inputmode="decimal" step="0.01" min="0" max="100" placeholder="optional"></label>
+        <label class="f"><span>DILR marks</span><input type="number" id="fD" inputmode="numeric" step="1" min="-22" max="66" required></label>
+        <label class="f"><span>DILR %ile</span><input type="number" id="fDp" inputmode="decimal" step="0.01" min="0" max="100" placeholder="optional"></label>
+        <label class="f"><span>QA marks</span><input type="number" id="fQ" inputmode="numeric" step="1" min="-22" max="66" required></label>
+        <label class="f"><span>QA %ile</span><input type="number" id="fQp" inputmode="decimal" step="0.01" min="0" max="100" placeholder="optional"></label>
+        <label class="f"><span>Overall %ile</span><input type="number" id="fOp" inputmode="decimal" step="0.01" min="0" max="100" placeholder="optional"></label>
+        <div class="f total"><span>Total</span><b id="fTotal">–</b></div>
+        <label class="f full"><span>Notes</span><input type="text" id="fNote" maxlength="200" placeholder="e.g. skipped the 2nd DILR set too late, 3 silly QA errors"></label>
+      </div>
+      <datalist id="mockNames"></datalist>
+      <div class="bk-actions">
+        <button type="submit" id="fSave" class="primary">Save mock</button>
+        <button type="button" id="fCancel" hidden>Cancel edit</button>
+      </div>
+      <p class="bk-msg" id="fMsg" role="status"></p>
+    </form>
+
+    <div class="table-wrap">
+      <table class="sc-table" id="scTable"></table>
+    </div>
+  </section>
+
   <section class="rules">
     <h2>Rules for every day</h2>
     <ul>
@@ -177,7 +273,7 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
       <li>Keep the CAT 2023, 2024 and 2025 papers untouched. They're your most realistic full mocks. Use CAT 2017–2022 for daily DILR practice.</li>
       <li>For DILR, always take 5 minutes to scan and rank the sets first. Write one line on why you picked or skipped each set.</li>
       <li>The QA topic each week is a starting guess. Swap it for whatever your mock analysis shows is weakest.</li>
-      <li>If you're not buying AIMCAT, take a SimCAT in its place. Don't add extra mocks on top.</li>
+      <li>All 15 proctored SimCATs are scheduled. If a proctored slot clashes, take a take-home SimCAT that day instead. Use the spare take-home SimCATs' DILR and QA sections for extra practice in November.</li>
       <li>Floor targets: DILR 22+, QA 22–25, VARC 42+. Check them every Monday.</li>
     </ul>
   </section>
@@ -185,7 +281,7 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
   <section class="rules backup" id="backup">
     <h2>Back up your progress</h2>
     <p class="bk-status" id="bkCount">Ticked so far: 0 tasks.</p>
-    <p class="bk-help">Ticks are saved only in this browser. Make a backup code every few days and keep it somewhere safe, like a note or a WhatsApp message to yourself. Paste it here later, or on another device, to bring your ticks back.</p>
+    <p class="bk-help">Ticks and mock scores are saved only in this browser. Make a backup code every few days and keep it somewhere safe, like a note or a WhatsApp message to yourself. Paste it here later, or on another device, to bring your ticks back.</p>
     <div class="bk-actions">
       <button type="button" id="bkMake">Create backup code</button>
       <button type="button" id="bkRestore">Restore from code</button>
@@ -195,7 +291,7 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
     <div class="bk-confirm" id="bkConfirm" hidden>
       <span id="bkConfirmText"></span>
       <div class="bk-actions">
-        <button type="button" id="bkYes" class="danger">Replace my ticks</button>
+        <button type="button" id="bkYes" class="danger">Replace my data</button>
         <button type="button" id="bkNo">Cancel</button>
       </div>
     </div>
@@ -212,11 +308,11 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
   const fmt = d => d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
 
   const MOCKS = {
-    "2026-10-04": "SimCAT", "2026-10-07": "AIMCAT", "2026-10-11": "SimCAT", "2026-10-14": "AIMCAT",
-    "2026-10-18": "SimCAT", "2026-10-21": "AIMCAT", "2026-10-25": "SimCAT", "2026-10-28": "CAT 2023 paper",
-    "2026-11-01": "SimCAT", "2026-11-03": "AIMCAT", "2026-11-05": "SimCAT", "2026-11-08": "CAT 2024 paper",
-    "2026-11-10": "AIMCAT", "2026-11-12": "SimCAT", "2026-11-15": "AIMCAT", "2026-11-17": "SimCAT",
-    "2026-11-19": "AIMCAT", "2026-11-22": "CAT 2025 paper", "2026-11-24": "SimCAT (optional)"
+    "2026-10-04": "SimCAT proctored", "2026-10-07": "SimCAT proctored", "2026-10-11": "SimCAT proctored", "2026-10-14": "SimCAT proctored",
+    "2026-10-18": "SimCAT proctored", "2026-10-21": "SimCAT proctored", "2026-10-25": "SimCAT proctored", "2026-10-28": "CAT 2023 paper",
+    "2026-11-01": "SimCAT proctored", "2026-11-03": "SimCAT proctored", "2026-11-05": "SimCAT proctored", "2026-11-08": "CAT 2024 paper",
+    "2026-11-10": "SimCAT proctored", "2026-11-12": "SimCAT proctored", "2026-11-15": "SimCAT proctored", "2026-11-17": "SimCAT proctored",
+    "2026-11-19": "SimCAT proctored", "2026-11-22": "CAT 2025 paper", "2026-11-24": "SimCAT take-home (optional)"
   };
 
   const PHASES = [
@@ -235,10 +331,23 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
   function dilrSource(d) {
     if (d <= new Date(2026, 9, 18)) return "CAT 2017–2019 papers";
     if (d <= new Date(2026, 9, 31)) return "CAT 2020–2022 papers";
-    return "IMS advanced sets, Elites Grid, or re-solves of old AIMCAT sets";
+    return "DILR sections of spare take-home SimCATs, or Elites Grid";
   }
 
   const T = (sec, text) => ({ sec, text });
+  const SECT = {
+    VARC: T("VARC", "IMS VARC sectional (40 min), then review every wrong answer"),
+    DILR: T("DILR", "IMS DILR sectional (40 min), then re-solve every set untimed"),
+    QA: T("QA", "IMS QA sectional (40 min), then redo every wrong and skipped question")
+  };
+  function analysisExtra(d, dow) {
+    const p2 = d >= new Date(2026, 10, 1);
+    if (!p2 && dow === 4) return SECT.QA;
+    if (p2 && dow === 1) return SECT.QA;
+    if (p2 && dow === 3) return SECT.DILR;
+    if (p2 && dow === 5) return SECT.VARC;
+    return T("DILR", `2 new sets, timed (${dilrSource(d)})`);
+  }
 
   function plan(d) {
     const k = key(d);
@@ -279,7 +388,7 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
     if (k === "2026-10-03") return { type: "drill", tag: "Setup", title: "Set up for the plan", tasks: [
       T("Setup", "Start an error log: question, section, mistake type (concept / silly / time), fix"),
       T("Setup", "Set aside the CAT 2023, 2024 and 2025 papers untouched for full mocks"),
-      T("Setup", "Decide on AIMCAT and buy it if you're taking it"),
+      T("Setup", "Check the IMS proctored SimCAT dates and shift this plan's mock days to match"),
       T("DILR", "4 sets from CAT 2017 slot 1: 5-min scan, solve best 2–3 in 35 min, re-solve the rest"),
       T("QA", "List your 3–4 weakest topics from the six mocks so far")
     ]};
@@ -287,7 +396,7 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
       const name = MOCKS[k];
       const t = [
         T("Mock", `Full mock: ${name}. 2 hours in one sitting, at your CAT slot time`),
-        T("Track", "Enter section scores, attempts and accuracy in your tracker"),
+        T("Track", "Log section scores and percentiles under Mock scores (button below)"),
         T("Quick", "20 min: mark every question you guessed so analysis catches them")
       ];
       if (name.includes("optional")) t.push(T("Note", "Skip this if you feel tired or anxious. Revise the error log instead"));
@@ -299,23 +408,25 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
         T("DILR", "Re-solve every set you skipped or left half-done, untimed. Was it a selection mistake or a skill gap?"),
         T("QA", "Redo every wrong and skipped question. Log each one as concept, silly, or time"),
         T("VARC", "Read solutions for every wrong answer and note the trap you fell for"),
-        T("DILR", `2 new sets, timed (${dilrSource(d)})`)
+        analysisExtra(d, dow)
       ];
       if (dow === 1) t.push(T("Weekly", "Weekly review: update your averages and check the DILR and QA floors against last week"));
       return { type: "anal", tag: "Analysis", title: `Analyse the ${prev.replace(" (optional)", "")}`, tasks: t };
     }
-    if (ph && ph.n === 2) return { type: "drill", tag: "Practice", title: "Mini-sectionals", tasks: [
-      T("DILR", `4 tougher sets in 40 min as a mini-sectional (${dilrSource(d)})`),
-      T("QA", "Mixed set of 22 questions in 40 min, then revise your error log"),
-      T("VARC", "2 RCs, timed, plus 4 VA questions"),
-      T("Review", "Reread your DILR selection notes from October")
+    if (ph && ph.n === 2) return { type: "drill", tag: "Practice", title: "Three IMS sectionals", tasks: [
+      SECT.VARC, SECT.DILR, SECT.QA,
+      T("Review", "Take all three back to back like a mock, then reread your DILR selection notes")
     ]};
-    return { type: "drill", tag: "Practice", title: qaTopic(d).split(":")[0] + " + DILR", tasks: [
-      T("DILR", `4 sets from ${dilrSource(d)}: 5-min scan and rank, solve the best 2–3 in 35 min, re-solve the rest untimed`),
-      T("QA", `${qaTopic(d)}. 25–30 CAT past-paper questions, then 10 timed`),
-      T("VARC", "2 RCs and 4 VA questions (para summary, odd one out)"),
-      T("Log", "One line per DILR set on why you picked or skipped it")
-    ]};
+    const topic = qaTopic(d);
+    const pyqSets = T("DILR", `4 sets from ${dilrSource(d)}: 5-min scan and rank, solve the best 2–3 in 35 min, re-solve the rest untimed`);
+    const qaWork = T("QA", `${topic}. 25–30 CAT past-paper questions, then 10 timed`);
+    const rc = T("VARC", "2 RCs and 4 VA questions (para summary, odd one out)");
+    const why = T("Log", "One line per DILR set on why you picked or skipped it");
+    const title = topic.split(":")[0];
+    if (dow === 2) return { type: "drill", tag: "Practice", title: title + " + DILR sectional", tasks: [SECT.DILR, qaWork, rc, why] };
+    if (dow === 5) return { type: "drill", tag: "Practice", title: title + " + VARC sectional", tasks: [pyqSets, qaWork, SECT.VARC, why] };
+    if (dow === 6) return { type: "drill", tag: "Practice", title: "DILR and QA sectionals", tasks: [SECT.DILR, SECT.QA, T("QA", `${topic}: 15 more past-paper questions`), rc] };
+    return { type: "drill", tag: "Practice", title: title + " + DILR", tasks: [pyqSets, qaWork, rc, why] };
   }
 
   // Build day list
@@ -349,10 +460,11 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
 
   // Tally
   const names = Object.values(MOCKS);
-  const sim = names.filter(n => n.startsWith("SimCAT")).length;
-  const aim = names.filter(n => n.startsWith("AIMCAT")).length;
+  const proc = names.filter(n => n.startsWith("SimCAT proctored")).length;
+  const take = names.filter(n => n.startsWith("SimCAT take-home")).length;
   const pyq = names.filter(n => n.startsWith("CAT")).length;
-  document.getElementById("tally").textContent = `${names.length} mocks: ${sim} SimCAT · ${aim} AIMCAT · ${pyq} past CAT papers`;
+  const sectCount = s => days.reduce((n, day) => n + day.tasks.filter(t => t === SECT[s]).length, 0);
+  document.getElementById("tally").textContent = `${names.length} mocks (${proc} proctored, ${take} take-home, ${pyq} past papers) · sectionals: ${sectCount("VARC")} VARC, ${sectCount("DILR")} DILR, ${sectCount("QA")} QA`;
 
   // Calendars
   const monthsEl = document.getElementById("months");
@@ -407,6 +519,7 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
       <ul class="tasks">${day.tasks.map((t, i) => `
         <li><label><input type="checkbox" id="t-${day.k}-${i}" data-i="${i}" ${isDone(day.k, i) ? "checked" : ""}>
         <span><span class="sec">${t.sec}</span>${t.text}</span></label></li>`).join("")}</ul>
+      ${day.type === "mock" ? `<button type="button" class="log-btn" id="logMock">Log this mock's score</button>` : ""}
       <div class="navbtns">
         <button type="button" id="prevDay" ${idx === 0 ? "disabled" : ""}>← Previous day</button>
         <button type="button" id="nextDay" ${idx === days.length - 1 ? "disabled" : ""}>Next day →</button>
@@ -419,12 +532,245 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
     }));
     detailEl.querySelector("#prevDay").addEventListener("click", () => { selected = days[idx - 1].k; renderAll(); });
     detailEl.querySelector("#nextDay").addEventListener("click", () => { selected = days[idx + 1].k; renderAll(); });
+    const logBtn = detailEl.querySelector("#logMock");
+    if (logBtn) logBtn.addEventListener("click", () => startLog(day));
   }
 
   function renderAll() { renderMonths(); renderDetail(); }
-  // Backup and restore
-  const bk = id => document.getElementById(id);
+
+  // Mock scores
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const MOCK_KEY = "cat26:mocks";
+  const SECS = [
+    { id: "v", name: "VARC", floor: 42 },
+    { id: "d", name: "DILR", floor: 22 },
+    { id: "q", name: "QA", floor: 22 }
+  ];
+  const TARGET = 105;
+  const pct = x => (typeof x === "number" && x >= 0 && x <= 100) ? x : null;
+  function cleanMock(m) {
+    if (!m || typeof m !== "object" || !/^\d{4}-\d{2}-\d{2}$/.test(m.date) || typeof m.name !== "string") return null;
+    if (![m.v, m.d, m.q].every(Number.isInteger)) return null;
+    return { id: String(m.id || Math.random().toString(36).slice(2)), date: m.date, name: m.name.slice(0, 60),
+      v: m.v, d: m.d, q: m.q, vp: pct(m.vp), dp: pct(m.dp), qp: pct(m.qp), op: pct(m.op),
+      note: typeof m.note === "string" ? m.note.slice(0, 200) : "" };
+  }
+  function loadMocks() {
+    try { const a = JSON.parse(store.get(MOCK_KEY) || "[]"); return Array.isArray(a) ? a.map(cleanMock).filter(Boolean) : []; }
+    catch (e) { return []; }
+  }
+  let mocks = loadMocks();
+  const sortMocks = () => mocks.sort((a, b) => a.date.localeCompare(b.date));
+  function saveMocks() { sortMocks(); store.set(MOCK_KEY, JSON.stringify(mocks)); }
+  sortMocks();
+  const total = m => m.v + m.d + m.q;
+  const avg = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : null;
+  const r1 = x => x === null ? "–" : (Math.round(x * 10) / 10).toString();
+  const dLabel = iso => { const [y, mo, d] = iso.split("-").map(Number); return new Date(y, mo - 1, d).toLocaleDateString("en-IN", { day: "numeric", month: "short" }); };
+
+  function renderSummary() {
+    const n = mocks.length;
+    if (!n) { $("scSummary").textContent = "No mocks logged yet"; return; }
+    const t = mocks.map(total);
+    $("scSummary").textContent = `${n} mock${n > 1 ? "s" : ""} · avg ${r1(avg(t))} · best ${Math.max(...t)} · last 3 avg ${r1(avg(t.slice(-3)))}`;
+  }
+
+  function spark(vals, floor) {
+    if (!vals.length) return "";
+    const W = 200, H = 44, pad = 5;
+    const lo = Math.min(...vals, floor) - 3, hi = Math.max(...vals, floor) + 3;
+    const x = i => vals.length === 1 ? W / 2 : pad + i * (W - 2 * pad) / (vals.length - 1);
+    const y = v => H - pad - (v - lo) / (hi - lo) * (H - 2 * pad);
+    const pts = vals.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+    const last = vals.length - 1;
+    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="0" x2="${W}" y1="${y(floor)}" y2="${y(floor)}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>
+      <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <circle cx="${x(last)}" cy="${y(vals[last])}" r="3.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+    </svg>`;
+  }
+
+  function renderFloors() {
+    $("scFloors").innerHTML = SECS.map(s => {
+      const vals = mocks.map(m => m[s.id]);
+      const last5 = vals.slice(-5);
+      let status = `<span class="status none">No data yet</span>`, nums = `Target floor ${s.floor}+`;
+      if (vals.length) {
+        const low = Math.min(...last5);
+        status = low >= s.floor ? `<span class="status good">✓ Floor met</span>` : `<span class="status bad">↓ Below floor</span>`;
+        nums = `Avg ${r1(avg(vals))} · Low of last ${last5.length}: ${low} · Target ${s.floor}+`;
+      }
+      return `<div class="floor"><div class="fl-top"><span class="fl-name">${s.name}</span>${status}</div>
+        <span class="fl-nums">${nums}</span>${spark(vals, s.floor)}</div>`;
+    }).join("");
+  }
+
+  let chartPts = [];
+  function renderChart() {
+    const wrap = $("scChartWrap"), svg = $("scChart"), tip = $("scTip");
+    tip.hidden = true;
+    const old = wrap.querySelector(".chart-empty"); if (old) old.remove();
+    if (!mocks.length) {
+      svg.style.display = "none";
+      const e = document.createElement("div"); e.className = "chart-empty";
+      e.textContent = "Your scores will appear here. Log your first mock below.";
+      wrap.appendChild(e); chartPts = []; return;
+    }
+    svg.style.display = "block";
+    const W = Math.max(wrap.clientWidth, 280), H = svg.clientHeight || 240;
+    const m = { l: 34, r: 40, t: 14, b: 26 };
+    const vals = mocks.map(total);
+    const step = 20;
+    const yMax = Math.ceil(Math.max(...vals, TARGET + 5, 120) / step) * step;
+    const yMin = Math.min(0, Math.floor(Math.min(...vals) / step) * step);
+    const x = i => mocks.length === 1 ? (m.l + W - m.r) / 2 : m.l + i * (W - m.l - m.r) / (mocks.length - 1);
+    const y = v => m.t + (yMax - v) / (yMax - yMin) * (H - m.t - m.b);
+    let g = "";
+    for (let v = yMin; v <= yMax; v += step * (yMax - yMin > 160 ? 2 : 1)) {
+      g += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/>`;
+      g += `<text x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">${v}</text>`;
+    }
+    g += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(TARGET)}" y2="${y(TARGET)}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+    g += `<text x="${W - m.r + 6}" y="${y(TARGET) + 4}" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">${TARGET}</text>`;
+    const every = Math.max(1, Math.ceil(mocks.length / Math.max(1, Math.floor((W - m.l - m.r) / 56))));
+    mocks.forEach((mk, i) => {
+      if (i % every === 0 || i === mocks.length - 1)
+        g += `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--f-mono)">${dLabel(mk.date)}</text>`;
+    });
+    const path = vals.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+    g += `<path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    g += `<line id="scCross" x1="0" x2="0" y1="${m.t}" y2="${H - m.b}" stroke="var(--muted)" stroke-width="1" visibility="hidden"/>`;
+    vals.forEach((v, i) => { g += `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>`; });
+    const li = vals.length - 1;
+    g += `<text x="${x(li)}" y="${y(vals[li]) - 10}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--fg)" font-family="var(--f-mono)">${vals[li]}</text>`;
+    g += `<rect id="scHit" x="${m.l - 10}" y="0" width="${W - m.l - m.r + 20}" height="${H}" fill="transparent"/>`;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.innerHTML = g;
+    chartPts = vals.map((v, i) => ({ x: x(i), y: y(v), mk: mocks[i] }));
+    const hit = svg.querySelector("#scHit"), cross = svg.querySelector("#scCross");
+    const show = ev => {
+      const r = svg.getBoundingClientRect();
+      const px = (ev.clientX - r.left) * (W / r.width);
+      let best = chartPts[0];
+      chartPts.forEach(p => { if (Math.abs(p.x - px) < Math.abs(best.x - px)) best = p; });
+      const mk = best.mk, sx = r.width / W;
+      cross.setAttribute("x1", best.x); cross.setAttribute("x2", best.x); cross.setAttribute("visibility", "visible");
+      const p = v => v === null ? "" : ` (${v})`;
+      tip.innerHTML = `<b>${esc(mk.name)}</b> · ${dLabel(mk.date)}<br>Total <b>${total(mk)}</b>${mk.op !== null ? ` · ${mk.op} %ile` : ""}<br>VARC ${mk.v}${p(mk.vp)} · DILR ${mk.d}${p(mk.dp)} · QA ${mk.q}${p(mk.qp)}`;
+      tip.hidden = false;
+      const tx = Math.min(Math.max(best.x * sx, 110), r.width - 110);
+      tip.style.left = tx + "px"; tip.style.top = (best.y * (r.height / H)) + "px";
+    };
+    hit.addEventListener("pointermove", show);
+    hit.addEventListener("pointerdown", show);
+    hit.addEventListener("pointerleave", () => { tip.hidden = true; cross.setAttribute("visibility", "hidden"); });
+  }
+
+  let pendingDelete = null;
+  function renderTable() {
+    const tbl = $("scTable");
+    if (!mocks.length) { tbl.innerHTML = ""; return; }
+    const cell = (v, p) => `<td class="num">${v}${p !== null ? `<small>${p} %ile</small>` : ""}</td>`;
+    tbl.innerHTML = `<thead><tr><th>Date</th><th>Mock</th><th class="num">VARC</th><th class="num">DILR</th><th class="num">QA</th><th class="num">Total</th><th class="num">%ile</th><th>Notes</th><th></th></tr></thead><tbody>` +
+      mocks.slice().reverse().map(mk => `<tr>
+        <td>${dLabel(mk.date)}</td><td>${esc(mk.name)}</td>
+        ${cell(mk.v, mk.vp)}${cell(mk.d, mk.dp)}${cell(mk.q, mk.qp)}
+        <td class="num"><b>${total(mk)}</b></td><td class="num">${mk.op !== null ? mk.op : "–"}</td>
+        <td class="note">${esc(mk.note || "")}</td>
+        <td class="acts">${pendingDelete === mk.id
+          ? `<button type="button" class="danger" data-act="del-yes" data-id="${mk.id}">Delete</button><button type="button" data-act="del-no">Keep</button>`
+          : `<button type="button" data-act="edit" data-id="${mk.id}">Edit</button><button type="button" data-act="del" data-id="${mk.id}">Delete</button>`}</td>
+      </tr>`).join("") + `</tbody>`;
+  }
+  $("scTable").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const act = b.dataset.act, id = b.dataset.id;
+    if (act === "del") { pendingDelete = id; renderTable(); }
+    else if (act === "del-no") { pendingDelete = null; renderTable(); }
+    else if (act === "del-yes") {
+      mocks = mocks.filter(m => m.id !== id); pendingDelete = null;
+      if (editingId === id) resetForm();
+      saveMocks(); renderScores(); fsay("Mock deleted.", "ok");
+    } else if (act === "edit") {
+      const mk = mocks.find(m => m.id === id); if (!mk) return;
+      editingId = id;
+      $("fDate").value = mk.date; $("fName").value = mk.name;
+      $("fV").value = mk.v; $("fD").value = mk.d; $("fQ").value = mk.q;
+      $("fVp").value = mk.vp ?? ""; $("fDp").value = mk.dp ?? ""; $("fQp").value = mk.qp ?? ""; $("fOp").value = mk.op ?? "";
+      $("fNote").value = mk.note || "";
+      $("scFormTitle").textContent = `Edit ${mk.name}`; $("fSave").textContent = "Save changes"; $("fCancel").hidden = false;
+      liveTotal(); fsay("");
+      $("scForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
+  function renderScores() { renderSummary(); renderFloors(); renderChart(); renderTable(); updateCount(); }
+
+  // Form
+  let editingId = null;
+  const fsay = (text, kind) => { const el = $("fMsg"); el.textContent = text; el.className = "bk-msg " + (kind || ""); };
+  ["SimCAT proctored", "SimCAT take-home", "CAT 2023 paper", "CAT 2024 paper", "CAT 2025 paper"].forEach(n => {
+    const o = document.createElement("option"); o.value = n; $("mockNames").appendChild(o);
+  });
+  function liveTotal() {
+    const vs = ["fV", "fD", "fQ"].map(id => $(id).value === "" ? NaN : Number($(id).value));
+    $("fTotal").textContent = vs.every(Number.isFinite) ? vs.reduce((a, b) => a + b, 0) : "–";
+  }
+  ["fV", "fD", "fQ"].forEach(id => $(id).addEventListener("input", liveTotal));
+  function resetForm() {
+    editingId = null;
+    $("scForm").reset();
+    $("fDate").value = key(today);
+    $("scFormTitle").textContent = "Log a mock"; $("fSave").textContent = "Save mock"; $("fCancel").hidden = true;
+    $("scForm").querySelectorAll("[aria-invalid]").forEach(el => el.removeAttribute("aria-invalid"));
+    liveTotal();
+  }
+  $("fCancel").addEventListener("click", () => { resetForm(); fsay(""); });
+  function startLog(day) {
+    resetForm();
+    $("fDate").value = day.k;
+    $("fName").value = (MOCKS[day.k] || "").replace(" (optional)", "");
+    fsay("");
+    $("scForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(() => $("fV").focus({ preventScroll: true }), 350);
+  }
+  $("scForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const bad = [];
+    const mark = (id, ok) => { if (ok) $(id).removeAttribute("aria-invalid"); else { $(id).setAttribute("aria-invalid", "true"); bad.push(id); } };
+    const date = $("fDate").value, name = $("fName").value.trim();
+    mark("fDate", /^\d{4}-\d{2}-\d{2}$/.test(date));
+    mark("fName", name.length > 0);
+    const marks = {};
+    [["fV", "v", -24, 72], ["fD", "d", -22, 66], ["fQ", "q", -22, 66]].forEach(([id, k, lo, hi]) => {
+      const raw = $(id).value, n = Number(raw);
+      const ok = raw !== "" && Number.isInteger(n) && n >= lo && n <= hi;
+      mark(id, ok); marks[k] = n;
+    });
+    const pcts = {};
+    [["fVp", "vp"], ["fDp", "dp"], ["fQp", "qp"], ["fOp", "op"]].forEach(([id, k]) => {
+      const raw = $(id).value, n = Number(raw);
+      const ok = raw === "" || (Number.isFinite(n) && n >= 0 && n <= 100);
+      mark(id, ok); pcts[k] = raw === "" ? null : n;
+    });
+    if (bad.length) {
+      fsay("Check the highlighted fields. Marks must be whole numbers (VARC up to 72, DILR and QA up to 66). Percentiles go from 0 to 100.", "err");
+      $(bad[0]).focus(); return;
+    }
+    const rec = cleanMock({ id: editingId || Date.now().toString(36) + Math.random().toString(36).slice(2, 6), date, name, ...marks, ...pcts, note: $("fNote").value.trim() });
+    const was = editingId;
+    if (was) mocks = mocks.map(m => m.id === was ? rec : m); else mocks.push(rec);
+    saveMocks(); resetForm(); renderScores();
+    fsay(`${was ? "Updated" : "Saved"} ${rec.name}: ${total(rec)} marks.`, "ok");
+  });
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderChart, 150); });
+
+  // Backup and restore (ticks + mock scores)
+  const bk = $;
   const PREFIX = "CAT26-";
+  const b64e = s => btoa(unescape(encodeURIComponent(s)));
+  const b64d = s => decodeURIComponent(escape(atob(s)));
   const tickedList = () => {
     const out = [];
     days.forEach(day => day.tasks.forEach((_, i) => { if (isDone(day.k, i)) out.push(day.k.slice(5) + ":" + i); }));
@@ -432,28 +778,35 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
   };
   function updateCount() {
     const done = tickedList().length;
-    const total = days.reduce((n, day) => n + day.tasks.length, 0);
-    bk("bkCount").textContent = `Ticked so far: ${done} of ${total} tasks.`;
+    const all = days.reduce((n, day) => n + day.tasks.length, 0);
+    bk("bkCount").textContent = `Ticked so far: ${done} of ${all} tasks · ${mocks.length} mock${mocks.length === 1 ? "" : "s"} logged.`;
   }
   function say(text, kind) { const m = bk("bkMsg"); m.textContent = text; m.className = "bk-msg " + (kind || ""); }
+  const okTick = x => typeof x === "string" && /^\d{2}-\d{2}:\d+$/.test(x);
   function decode(code) {
     code = code.trim().replace(/\s+/g, "");
     if (!code.startsWith(PREFIX)) return null;
     try {
-      const list = JSON.parse(atob(code.slice(PREFIX.length)));
-      if (!Array.isArray(list)) return null;
-      return list.filter(x => typeof x === "string" && /^\d{2}-\d{2}:\d+$/.test(x));
+      const data = JSON.parse(b64d(code.slice(PREFIX.length)));
+      if (Array.isArray(data)) return { t: data.filter(okTick), m: null };
+      if (data && typeof data === "object") return {
+        t: Array.isArray(data.t) ? data.t.filter(okTick) : [],
+        m: Array.isArray(data.m) ? data.m.map(cleanMock).filter(Boolean) : []
+      };
+      return null;
     } catch (e) { return null; }
   }
+  const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
 
   bk("bkMake").addEventListener("click", () => {
-    const list = tickedList();
-    const code = PREFIX + btoa(JSON.stringify(list));
+    const t = tickedList();
+    const code = PREFIX + b64e(JSON.stringify({ t, m: mocks }));
     const box = bk("bkCode");
     box.value = code;
     bk("bkConfirm").hidden = true;
-    const done = () => say(`Backup code for ${list.length} ticked tasks copied. Paste it somewhere safe.`, "ok");
-    const fallback = () => { box.focus(); box.select(); say(`Backup code for ${list.length} ticked tasks is in the box. Copy it and keep it somewhere safe.`, "ok"); };
+    const what = `${plural(t.length, "ticked task")} and ${plural(mocks.length, "mock")}`;
+    const done = () => say(`Backup code for ${what} copied. Paste it somewhere safe.`, "ok");
+    const fallback = () => { box.focus(); box.select(); say(`Backup code for ${what} is in the box. Copy it and keep it somewhere safe.`, "ok"); };
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, fallback);
       else fallback();
@@ -462,10 +815,12 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
 
   let pending = null;
   bk("bkRestore").addEventListener("click", () => {
-    const list = decode(bk("bkCode").value);
-    if (!list) { say("That code doesn't look right. Paste the whole code, starting with CAT26-.", "err"); return; }
-    pending = list;
-    bk("bkConfirmText").textContent = `This code has ${list.length} ticked tasks. Restoring replaces the ${tickedList().length} ticks in this browser.`;
+    const data = decode(bk("bkCode").value);
+    if (!data) { say("That code doesn't look right. Paste the whole code, starting with CAT26-.", "err"); return; }
+    pending = data;
+    bk("bkConfirmText").textContent = data.m
+      ? `This code has ${plural(data.t.length, "ticked task")} and ${plural(data.m.length, "mock")}. Restoring replaces the ${plural(tickedList().length, "tick")} and ${plural(mocks.length, "mock")} in this browser.`
+      : `This code has ${plural(data.t.length, "ticked task")}. Restoring replaces the ${plural(tickedList().length, "tick")} in this browser. Your logged mocks stay as they are.`;
     bk("bkConfirm").hidden = false;
     say("");
   });
@@ -473,16 +828,19 @@ aside.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px)
   bk("bkYes").addEventListener("click", () => {
     if (!pending) return;
     days.forEach(day => day.tasks.forEach((_, i) => store.set(`cat26:${day.k}:${i}`, "0")));
-    pending.forEach(x => { const [md, i] = x.split(":"); store.set(`cat26:2026-${md}:${i}`, "1"); });
+    pending.t.forEach(x => { const [md, i] = x.split(":"); store.set(`cat26:2026-${md}:${i}`, "1"); });
+    if (pending.m) { mocks = pending.m; saveMocks(); }
     bk("bkConfirm").hidden = true;
-    say(`Restored ${pending.length} ticked tasks.`, "ok");
+    say(`Restored ${plural(pending.t.length, "ticked task")}${pending.m ? ` and ${plural(pending.m.length, "mock")}` : ""}.`, "ok");
     pending = null;
-    renderAll();
+    renderAll(); renderScores();
   });
 
   const baseRender = renderAll;
   renderAll = function () { baseRender(); updateCount(); };
+  resetForm();
   renderAll();
+  renderScores();
 })();
 </script>
 
